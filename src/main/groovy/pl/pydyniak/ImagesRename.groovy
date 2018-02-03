@@ -33,6 +33,7 @@ class ImagesRename {
             if (!isAlreadyNamedCorrectly(file, nameFormat, timezone))
                 renameImage(file, nameFormat, timezone)
         } catch (ImageProcessingException ex) {
+            ex.printStackTrace()
             //do nothing
         }
     }
@@ -46,11 +47,18 @@ class ImagesRename {
         new SimpleDateFormat(namePattern).format(date);
     }
 
-    private def getCreationDate(File file, String timezone) {
-        Metadata metadata = ImageMetadataReader.readMetadata(file)
-        def type = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class)
-        def creationDate = type.getDateOriginal(TimeZone.getTimeZone(timezone))
-        creationDate
+    private Date getCreationDate(File file, String timezone) {
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(file)
+            def type = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class)
+            def creationDate = type.getDateOriginal(TimeZone.getTimeZone(timezone))
+            creationDate
+        } catch(Exception ex) {
+            //TODO determine why 'Exception in thread "main" java.io.IOException: Stream ended before file's magic number could be determined.'
+            //TODO is thrown. Probably it happens for big files (not images but videos)
+            ////TODO for now all of them will be renamed to same name (with unique id if needed)
+            new Date(0L)
+        }
     }
 
     private void renameImage(file, nameFormat, timezone) {
