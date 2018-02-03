@@ -1,3 +1,5 @@
+import org.junit.Before
+import org.junit.BeforeClass
 import pl.pydyniak.ImagesRename
 import org.apache.commons.io.FileUtils
 import org.junit.Assert
@@ -8,10 +10,17 @@ import org.junit.Test
  */
 class ImagesRenameTest {
 
-    private final String RESOURCES_TEST_FILES_PATH = "/home/rafal/Projects/images-rename/src/test/resources/test-files"
+    private static String resourcesTestFilesPath
+
+    @BeforeClass
+    public static void prepareResourcesPath() {
+        resourcesTestFilesPath = ImagesRenameTest.class.getClassLoader()
+                .getResource("test-files")?.file
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfDirectoryDoesntExist() {
+        println resourcesTestFilesPath
         ImagesRename imagesRename = new ImagesRename()
         imagesRename.renameImagesToCreationDate("non-existing-dir")
     }
@@ -20,14 +29,14 @@ class ImagesRenameTest {
     @Test (expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForWrongTimeZone() {
         ImagesRename imagesRename = new ImagesRename()
-        imagesRename.renameImagesToCreationDate(RESOURCES_TEST_FILES_PATH, "wrong")
+        imagesRename.renameImagesToCreationDate(resourcesTestFilesPath, "wrong")
 
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionForWrongNameFormat() {
         ImagesRename imagesRename = new ImagesRename()
-        imagesRename.renameImagesToCreationDate(RESOURCES_TEST_FILES_PATH, "Europe/Warsaw" , "wrong format")
+        imagesRename.renameImagesToCreationDate(resourcesTestFilesPath, "Europe/Warsaw" , "wrong format")
     }
 
     @Test
@@ -52,8 +61,8 @@ class ImagesRenameTest {
     }
 
     private File prepareTestDirectory() {
-        File testFilesDirectory = new File(RESOURCES_TEST_FILES_PATH)
-        File newTestFilesDirectory = new File(RESOURCES_TEST_FILES_PATH + "-temp");
+        File testFilesDirectory = new File(resourcesTestFilesPath)
+        File newTestFilesDirectory = new File(resourcesTestFilesPath + "-temp");
         newTestFilesDirectory.mkdir()
         FileUtils.copyDirectory(testFilesDirectory, newTestFilesDirectory)
         newTestFilesDirectory
@@ -92,8 +101,8 @@ class ImagesRenameTest {
 
     File prepareTestDirectoryWithMultipleFilesWithSameTimeStamp() {
         def testDirectory = prepareTestDirectory()
-        FileUtils.copyFile(new File(RESOURCES_TEST_FILES_PATH+"/file1.jpg"), new File(testDirectory.getAbsolutePath()+"/file11.jpg"))
-        FileUtils.copyFile(new File(RESOURCES_TEST_FILES_PATH+"/file1.jpg"), new File(testDirectory.getAbsolutePath()+"/file1222.jpg"))
+        FileUtils.copyFile(new File(resourcesTestFilesPath+"/file1.jpg"), new File(testDirectory.getAbsolutePath()+"/file11.jpg"))
+        FileUtils.copyFile(new File(resourcesTestFilesPath+"/file1.jpg"), new File(testDirectory.getAbsolutePath()+"/file1222.jpg"))
         testDirectory
     }
 

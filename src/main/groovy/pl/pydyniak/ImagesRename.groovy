@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat
  * Created by rafal on 5/24/16.
  */
 class ImagesRename {
+    private static final def formatsToRename =
+            ["jpg", "jpeg", "bmp", "gif", "png", "img", "ico", "mp4", "avi"]
 
     public void renameImagesToCreationDate(String directoryPath, String timezone = "Europe/Warsaw", String nameFormat = "yyyyMMddHHmmss") {
         File directoryFile = new File(directoryPath)
@@ -30,12 +32,17 @@ class ImagesRename {
 
     private void tryToRenameImage(File file, nameFormat, timezone) {
         try {
-            if (!isAlreadyNamedCorrectly(file, nameFormat, timezone))
+            if (fileHasDesiredExtension(file) && !isAlreadyNamedCorrectly(file, nameFormat, timezone))
                 renameImage(file, nameFormat, timezone)
         } catch (ImageProcessingException ex) {
             ex.printStackTrace()
             //do nothing
         }
+    }
+
+    boolean fileHasDesiredExtension(File file) {
+        String extension = getFileExtension(file)
+        formatsToRename*.toLowerCase().contains(extension.toLowerCase())
     }
 
     private boolean isAlreadyNamedCorrectly(file, nameFormat, timezone) {
