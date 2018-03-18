@@ -3,6 +3,8 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply plugin: 'application'
+
 
 sourceCompatibility = 1.5
 
@@ -18,4 +20,9 @@ dependencies {
     // http://mvnrepository.com/artifact/commons-io/commons-io
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
 
+}
+
+mainClassName="pl.pydyniak.Main"
+run {
+    standardInput = System.in
 }
